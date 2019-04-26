@@ -1,18 +1,7 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace WpfApp2
 {
@@ -27,13 +16,13 @@ namespace WpfApp2
         }
 
         List<data> list = new List<data>();
-        List<data> pd = new List<data>();
+        List<data2> pd = new List<data2>();
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            string Mispath = "C:\\Users\\kevin\\Desktop\\kt\\misspell.txt";
-            string Dictpath = "C:\\Users\\kevin\\Desktop\\kt\\dict.txt";
-            string Corrpath = "C:\\Users\\kevin\\Desktop\\kt\\correct.txt";
+            string Mispath = @"F:\BaiduNetdiskDownload\misspell.txt";
+            string Dictpath = @"F:\BaiduNetdiskDownload\dict.txt";
+            string Corrpath = @"F:\BaiduNetdiskDownload\correct.txt";
 
             Data(Mispath);
             Data(Dictpath);
@@ -44,14 +33,15 @@ namespace WpfApp2
             data Correct = list[2];
             GED ged = new GED();
 
-            string[] temp = new string[Dictionary.strs.Length];
             double[] distances = new double[Dictionary.strs.Length];
             int num = 0;
             int[] No = new int[Dictionary.strs.Length+1];
 
+
             for (int i = 0; i < Misspell.strs.Length; i++)
             {
-                temp = new string[Dictionary.strs.Length];
+                data2 temp = new data2();
+
                 for (int j = 0; j < Dictionary.strs.Length; j++)
                 {
                     distances[j] = ged.getStringDistance(Misspell.strs[i], Dictionary.strs[j]);
@@ -59,9 +49,9 @@ namespace WpfApp2
                 getMin(distances,ref No);
                 for (int j = 0; j < No.Length && No[j] != -1; j++)
                 {
-                    temp[j] = Dictionary.strs[No[j]];
+                    temp.strs.Add(Dictionary.strs[No[j]]);
                 }
-                pd.Add(new data { strs = temp });
+                pd.Add(temp);
             }
 
             num = 0;
@@ -80,7 +70,7 @@ namespace WpfApp2
 
             for (int i = 0; i < pd.Count; i++)
             {
-                for (int j = 0; j < pd[i].strs.Length; j++)
+                for (int j = 0; j < pd[i].strs.Count; j++)
                 {
                     if (Correct.strs[i] != pd[i].strs[j])
                     {
@@ -94,7 +84,7 @@ namespace WpfApp2
             num = 0;
             for (int i = 0; i < pd.Count; i++)
             {
-                for (int j = 0; j < pd[i].strs.Length; j++)
+                for (int j = 0; j < pd[i].strs.Count; j++)
                 {
                     if (Correct.strs[i] == pd[i].strs[j])
                     {
@@ -109,25 +99,28 @@ namespace WpfApp2
             Result.Text += ("Recall:" + Recall + "\n");
         }
 
-        private static int[] getMin(double[] dist,ref int[] num)
+
+
+        private static void getMin(double[] dist,ref int[] num)
         {
             double min = dist[0];
             int no = 0;
-            for (int i = 0; i < dist.Length; i++,no++)
+            for (int i = 0; i < dist.Length; i++)
             {
                 if (dist[i] < min)
                 {
                     min = dist[i];
                     no = 0;
                     num[no] = i;
+                    no++;
                 }
                 else if (dist[i] == min)
                 {
                     num[no] = i;
+                    no++;
                 }
             }
             num[no] = -1;
-            return num;
         }
 
         void Data(string path)
