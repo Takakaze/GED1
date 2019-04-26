@@ -47,7 +47,7 @@ namespace WpfApp2
             string[] temp = new string[Dictionary.strs.Length];
             double[] distances = new double[Dictionary.strs.Length];
             int num = 0;
-            int[] No = new int[20000];
+            int[] No = new int[Dictionary.strs.Length+1];
 
             for (int i = 0; i < Misspell.strs.Length; i++)
             {
@@ -56,7 +56,7 @@ namespace WpfApp2
                 {
                     distances[j] = ged.getStringDistance(Misspell.strs[i], Dictionary.strs[j]);
                 }
-                No = getMin(distances);
+                getMin(distances,ref No);
                 for (int j = 0; j < No.Length && No[j] != -1; j++)
                 {
                     temp[j] = Dictionary.strs[No[j]];
@@ -109,32 +109,24 @@ namespace WpfApp2
             Result.Text += ("Recall:" + Recall + "\n");
         }
 
-
-
-        private static int[] getMin(double[] dist)
+        private static int[] getMin(double[] dist,ref int[] num)
         {
             double min = dist[0];
-            int[] num = new int[dist.Length];
             int no = 0;
-            for (int i = 0; i < dist.Length; i++)
+            for (int i = 0; i < dist.Length; i++,no++)
             {
                 if (dist[i] < min)
                 {
                     min = dist[i];
                     no = 0;
                     num[no] = i;
-                    no++;
                 }
                 else if (dist[i] == min)
                 {
                     num[no] = i;
-                    no++;
                 }
             }
-            for (; no < num.Length; no++)
-            {
-                num[no] = -1;
-            }
+            num[no] = -1;
             return num;
         }
 
